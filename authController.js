@@ -43,11 +43,36 @@ module.exports = {
                 }
             })
 
-            return res.render('profile', {
-                error: false,
-                message: 'register success'
+            const transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: process.env.NODEMAILER_USER,
+                    pass: process.env.NODEMAILER_PASS
+                }
             })
-            
+
+            const mailOptions = {
+                from: process.env.NODEMAILER_USER,
+                to: email,
+                subject: "Welcome",
+                html: `<p>Welcome, thank you for registering.</p>`
+            }
+
+            transporter.sendMail(mailOptions, (error, info) => {
+                if(error){
+                    console.log(error)
+                    return res.render('error', {
+                        error: true,
+                        message: error
+                    })
+                }
+
+                return res.render('profile', {
+                    error: false,
+                    message: 'register success'
+                })
+            })
+
         } catch (error) {
 
             console.log(error.message)
